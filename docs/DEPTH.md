@@ -29,6 +29,9 @@
 | TRAP-06 | 全角千分位 | 静默错算或证据丢失 | 以可复核规则显式处理 | `app/modules/devices/rules.py` | `tests/test_devices.py::test_fullwidth_number` |
 | TRAP-11 | UTC归一 | 静默错算或证据丢失 | 以可复核规则显式处理 | `app/modules/devices/rules.py` | `tests/test_devices.py::test_time_equivalence` |
 | TRAP-23 | 限电区间并集 | 静默错算或证据丢失 | 以可复核规则显式处理 | `app/modules/slicing/rules.py` | `tests/test_slicing.py::test_overlapping_real` |
+| TRAP-24 | 换频致边界错位或缺口被插值 | 静默错算或证据丢失 | 以可复核规则显式处理 | `app/modules/slicing/rules.py` `app/cadence.py` | `tests/test_cadence.py::test_mixed_union_boundaries_unchanged` |
+| TRAP-25 | 跨频率基线对照 | 静默错算或证据丢失 | 以可复核规则显式处理 | `app/modules/baseline/rules.py` | `tests/test_cadence.py::test_reference_window_covers_finer_target` |
+| TRAP-26 | 重跑或换频回滚丢数据 | 静默错算或证据丢失 | 以可复核规则显式处理 | `app/engine.py` `app/store.py` | `tests/test_cadence.py::test_frequency_switch_and_rollback` |
 
 ## 对账规则
 

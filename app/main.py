@@ -39,6 +39,12 @@ def runs():
 @app.get('/api/runs/{run_id}')
 def run(run_id:str):
     return store.get(DB_PATH,run_id)
+@app.get('/api/runs/{run_id}/compare')
+def compare(run_id:str,other:str|None=None):
+    from app.compare import compare_view
+    view=compare_view(DB_PATH,store.get(DB_PATH,run_id),other)
+    if not view['result']: raise BusinessError('NO_COMPARABLE','没有可对照的批次',404)
+    return view['result']
 @app.post('/api/runs/{run_id}/review')
 def review(run_id:str,payload:dict=Body(...)):
     revision=payload.get('revision')

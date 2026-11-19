@@ -11,7 +11,9 @@ docker compose exec -T app pytest -q
 
 访问 http://localhost:18244 。启动直接载入现场脏批。切换干净样例和旧编码样例可对照核验。完整对照批INV-A重叠事件取并集后30分钟，基线100kW、实际60kW，损失20kWh；无合格对照或遥测冲突必须保持未定，不能填0。
 
-各模块页面对应 `/<模块英文名>`，各模块执行入口为 `POST /api/<模块英文名>`，不传参即可独立演示。完整运行 `POST /api/runs` 支持 `dataset`（dirty/clean/legacy）、`csv_text` 与 `overrides` 参数。批次历史 `GET /api/runs`，详情 `GET /api/runs/{run_id}`。
+混频样例 `mixed` 演示采样间隔由10分钟缩短到5分钟后的跨频率复算：采样间隔是设备级属性（`devices.<id>.cadence_seconds`，缺省全局600秒），事件并集与积分时长与频率无关，未采到的分钟保持未定。混频批确定损失23.3333kWh、未定300秒（INV-A缺10:15样本），与完整对照批差−3.3333kWh。损失页"新旧对照"按事件并集对齐展示新旧差异与未定时段；对照接口 `GET /api/runs/{run_id}/compare?other={run_id}`，缺省自动选中同一时段的批次。换频生成新批次，旧批次保留；用旧参数重算即命中旧批号恢复旧版结果，重跑同批不新增或改动已确认损失。
+
+各模块页面对应 `/<模块英文名>`，各模块执行入口为 `POST /api/<模块英文名>`，不传参即可独立演示。完整运行 `POST /api/runs` 支持 `dataset`（dirty/clean/legacy/mixed）、`csv_text` 与 `overrides` 参数（嵌套字典深合并，可设 `devices.<id>.cadence_seconds`）。批次历史 `GET /api/runs`，详情 `GET /api/runs/{run_id}`。
 
 同输入与规则版本生成相同批号，只保留一条批次。复核入口 `POST /api/runs/{run_id}/review` 提交当前 `revision`，陈旧提交409。归档包只有一个下载入口 `GET /api/export/{run_id}`，含证据和运行摘要。原始隔离在页面同屏显示。
 

@@ -1,4 +1,5 @@
 from app.coerce import instant
+from app.cadence import cadence_of
 from datetime import timedelta
 from collections import defaultdict
 
@@ -16,9 +17,11 @@ def slice_intervals(records,context):
     for row in records:
         if row['kind']=='EVENT':event_groups[row['device']].append(row)
         else:samples[row['device']].append(row)
-    segments=[];unions=[];cadence=context['cadence_seconds']
+    segments=[];unions=[]
+    # 事件并集与积分时长只由事件记录决定,与采样频率无关;频率只决定各设备左值保持窗口的粒度。
     for device,events in sorted(event_groups.items()):
         readings=sorted(samples[device],key=lambda r:instant(r['at']))
+        cadence=cadence_of(context,device)
         for merged in union_events(events):
             start,end=merged['start'],merged['end'];boundaries={start,end}
             for row in readings:

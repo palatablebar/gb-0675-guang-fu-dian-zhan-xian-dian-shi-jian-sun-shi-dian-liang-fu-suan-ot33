@@ -26,6 +26,18 @@ def history(path):
     with connect(path) as con:
         return [dict(r) for r in con.execute('SELECT id,revision,status FROM runs ORDER BY rowid DESC LIMIT 100')]
 
+def summaries(path):
+    """批次摘要(含事件并集签名),供新旧对照选择;批次结果本体不可变,只读。"""
+    with connect(path) as con:
+        rows=con.execute('SELECT id,revision,status,result FROM runs ORDER BY rowid DESC LIMIT 100').fetchall()
+    out=[]
+    for r in rows:
+        result=json.loads(r['result'])
+        out.append({'id':r['id'],'revision':r['revision'],'status':r['status'],
+                    'source':result.get('source'),'generated_at':result.get('manifest',{}).get('generated_at',''),
+                    'unions':[(u['device'],u['start'],u['end']) for u in result.get('event_unions',[])]})
+    return out
+
 def review(path,run_id,revision):
     with connect(path) as con:
         cur=con.execute('UPDATE runs SET revision=revision+1,status=? WHERE id=? AND revision=?',('已复核',run_id,revision))
